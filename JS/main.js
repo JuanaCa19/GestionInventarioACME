@@ -21,15 +21,8 @@ formLogin.addEventListener("submit",async (ev)=>{
 });
 
 async function obtenerUsuarios(){
-    const response = await fetch(`${API_URL}/user/usuarios.json`,{
-        method:"GET",
-        headers:{
-            "Content-Type":"application/json"
-        }
-    });
-
+    const response = await fetch(`${API_URL}/user/usuarios.json`);
     usuarios = await response.json();
-
 } 
 
 function guardarSesion(){
