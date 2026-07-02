@@ -30,7 +30,7 @@ async function obtenerUsuarios(){
 
     usuarios = await response.json();
 
-}
+} 
 
 function guardarSesion(){
 
