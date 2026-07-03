@@ -1,4 +1,4 @@
-const tablaComponente = document.getElementById("tabla-componente");
+const buscadorComponente = document.getElementById("buscador-componente");
 const API_URL = "https://stock-flow-b661f-default-rtdb.firebaseio.com";
 const modal = document.querySelector('.modal-overlay');
 const formulario = document.querySelector(".modal-form");
@@ -9,11 +9,15 @@ cargarTabla();
 modal.addEventListener("click",(ev)=>{
   if(ev.target == modal){
     ocultarModal();
+    formulario.reset();
+    idUsuario = null;
   }
 })
 
 async function cargarTabla() {
   await obtenerUsuarios();
+  buscadorComponente.setBuscador(["Nombre","Identificación"]);
+  const tablaComponente = document.getElementById("tabla-componente");
   tablaComponente.setTabla(["CC", "Nombre", "Cargo","Acciones"], usuarios,"usuario");
 }
 

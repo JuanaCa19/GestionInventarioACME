@@ -1,19 +1,20 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
-    <link rel="stylesheet" href="/CSS/usuarios.css">
     <link rel="stylesheet" href="/CSS/style.css">
+    <link rel="stylesheet" href="/CSS/inventario.css">
     <title>Document</title>
 </head>
-
 <body>
+
     <barra-aside class="aside"></barra-aside>
+
     <main class="main">
         <buscador-componente id="buscador-componente"></buscador-componente>
+
     </main>
 
 
@@ -22,25 +23,31 @@
             <form class="modal-form">
                 <h2 class="modal-titulo">Registrar Producto</h2>
 
-                <label for="identificacion">Código</label>
-                <input type="text" name="identificacion" id="identificacion" placeholder="1092529698" required>
+                <label for="codigo">Código</label>
+                <input type="text" name="codigo" id="codigo" placeholder="002145" required>
 
                 <label for="nombre">Nombre</label>
-                <input type="text" name="nombre" id="nombre" placeholder="Juan Cardenas" required>
+                <input type="text" name="nombre" id="nombre" placeholder="Mantequilla" required>
 
-                <label for="cargo">Cargo</label>
-                <select name="cargo" id="cargo" required>
+                <label for="tipo">Tipo de Producto</label>
+                <select name="tipo" id="tipo" required>
                     <option value="" selected disabled>Seleccionar</option>
-                    <option value="Administrador">Administrador</option>
-                    <option value="Trabajador">Trabajador</option>
+                    <option value="Materia Prima">Materia Prima</option>
+                    <option value="Producto Elaborado">Producto Elaborado</option>
                 </select>
 
-                <label for="password">Contraseña</label>
-                <input name="password" type="password" id="password" placeholder="••••••••" required>
+                <label for="stock">Stock</label>
+                <input name="stock" type="number" id="stock" placeholder="0" required>
 
-                <label for="passwordRep">Repetir Contraseña</label>
-                <input name="passwordRep" type="password" id="passwordRep" placeholder="••••••••" required>
+                <label for="proveedor">Proveedor</label>
+                <input name="proveedor" type="text" id="proveedor" placeholder="Colanta" required>
 
+                <div class="seccion-receta">
+                    <h2 class="modal-titulo">Registrar Receta</h2>
+                    <div class="receta-lista">
+
+                    </div>
+                </div>
                 <div class="modal-botones">
                     <button type="button" class="btn-cancelar" onclick="ocultarModal()">Cancelar</button>
                     <button type="submit" class="btn-guardar">Guardar</button>
@@ -48,9 +55,8 @@
             </form>
         </div>
     </div>
+    <mi-tabla></mi-tabla>
     <script src="/JS/componentes.js"></script>
-    <script src="/JS/usuarios.js"></script>
-
+    <script src="/JS/inventario.js"></script>
 </body>
-
 </html>
