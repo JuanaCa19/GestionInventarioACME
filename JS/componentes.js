@@ -102,7 +102,6 @@ class buscador extends HTMLElement{
         })
 
         this.innerHTML = `
-            <section class="contenedor-usuarios">
                 <div class="barra-busqueda">
                     <div class="contenedor-buscador">
                         <input type="text" id="buscador" class="buscador" placeholder="Buscar...">
@@ -113,11 +112,8 @@ class buscador extends HTMLElement{
                         ${opcionesHtml}
 
                     </select>
-                    <button onclick="mostrarModal()"><i class="bi bi-plus-lg"></i> Agregar</button>
+                    <button id = "btn-agregar" ><i class="bi bi-plus-lg"></i> Agregar</button>
                 </div>
-                <mi-tabla id="tabla-componente" class="tabla-componente"></mi-tabla>
-            </section>
-        
         `;
     }
 }

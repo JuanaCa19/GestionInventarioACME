@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,12 +9,16 @@
     <link rel="stylesheet" href="/CSS/inventario.css">
     <title>Document</title>
 </head>
+
 <body>
 
     <barra-aside class="aside"></barra-aside>
 
     <main class="main">
-        <buscador-componente id="buscador-componente"></buscador-componente>
+        <section class="contenedor-usuarios">
+            <buscador-componente id="buscador-componente"></buscador-componente>
+            <mi-tabla id="tabla-componente" class="tabla-componente"></mi-tabla>
+        </section>
 
     </main>
 
@@ -42,12 +47,6 @@
                 <label for="proveedor">Proveedor</label>
                 <input name="proveedor" type="text" id="proveedor" placeholder="Colanta" required>
 
-                <div class="seccion-receta">
-                    <h2 class="modal-titulo">Registrar Receta</h2>
-                    <div class="receta-lista">
-
-                    </div>
-                </div>
                 <div class="modal-botones">
                     <button type="button" class="btn-cancelar" onclick="ocultarModal()">Cancelar</button>
                     <button type="submit" class="btn-guardar">Guardar</button>
@@ -55,8 +54,8 @@
             </form>
         </div>
     </div>
-    <mi-tabla></mi-tabla>
     <script src="/JS/componentes.js"></script>
     <script src="/JS/inventario.js"></script>
 </body>
+
 </html>

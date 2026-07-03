@@ -101,7 +101,6 @@ table {
 .contenedor-usuarios {
   display: flex;
   flex-direction: column;
-  align-items: center;
   gap: 15px;
 }
 .contenedor-buscador {
@@ -119,7 +118,7 @@ table {
   border-radius: 5px;
 }
 .barra-busqueda {
-  align-self: flex-start;
+  justify-self: flex-start;
   display: flex;
   gap: 10px;
 }
@@ -151,7 +150,7 @@ table {
 .barra-busqueda select option[value="default"] {
   color: gray;
 }
-.barra-busqueda button {
+.barra-busqueda button{
   display: flex;
   align-items: center;
   gap: 6px;
