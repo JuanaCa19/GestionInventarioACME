@@ -104,7 +104,7 @@ async function verificarReceta(codigo) {
 
   for (let i = 0; i < recetas.length; i++) {
 
-    if (recetas[i].codigoProducto == codigo) {
+    if (recetas[i].codigoproducto == codigo) {
 
       return recetas[i].materiales;
     }
@@ -205,7 +205,7 @@ async function verificarExistenciaReceta(id) {
   recetas = await obtenerLista("receta");
 
   for (let receta of recetas) {
-    if (receta.codigoProducto == id) {
+    if (receta.codigoproducto == id) {
       alert(`No puedes eliminar este producto porque tiene una receta asociada. Elimina primero la receta desde la sección Recetas.`);
       return true;
     }

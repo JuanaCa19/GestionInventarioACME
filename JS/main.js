@@ -11,7 +11,7 @@ formLogin.addEventListener("submit",async (ev)=>{
     await obtenerUsuarios();
 
     for(let i = 0; i< usuarios.length;i++){
-        if(usuarios[i].CC == cc.value && usuarios[i].Contraseña == password.value){
+        if(usuarios[i].cc == cc.value && usuarios[i].contraseña == password.value){
             guardarSesion();
             window.location.href = "usuarios.html"
             return;

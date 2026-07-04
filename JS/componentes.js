@@ -94,6 +94,7 @@ class aside extends HTMLElement {
                     <a href="/usuarios.html">Usuario</a>
                     <a href="/inventario.html">Inventario</a>
                     <a href="/receta.html">Receta</a>
+                    <a href="/index.html">Salir</a>
                 </nav>
             </div>
         `;
