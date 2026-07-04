@@ -43,22 +43,39 @@ modal.addEventListener("click",(ev)=>{
 })
 
 async function cargarProductosSelect(){
+    const selectProducto = document.getElementById("producto");
     inventario = await obtenerLista("inventario");
 
-    let opciones = "";
+    let opciones = `<option value="" selected disabled>Seleccionar</option>`;
+    let opcionesProductoElaborado=`<option value="" selected disabled>Seleccionar</option>`;
 
     inventario.forEach(producto => {
+        if(producto.tipo == "Producto Elaborado"){
+            opcionesProductoElaborado += `
+                <option value="${producto.codigo}">${producto.nombre}</option>
+            `;
+        }
         opciones += `
             <option value="${producto.codigo}">${producto.nombre}</option>
-        `;    
+        `;
+
     });
 
-    selectProductos.innerHTML += opciones;
+    selectProducto.innerHTML = opcionesProductoElaborado;
+    selectProductos.innerHTML = opciones;
 }
 
 btnMateriales.addEventListener("click", async ()=>{
     const contMateriales = document.getElementById("cont-receta-items");
+    const cantidad = document.getElementById("cantidad").value;
     let codigoProducto = selectProductos.value;
+    let stockValido = await verificarStock(codigoProducto,cantidad);
+    console.log(stockValido);
+    if(!stockValido){
+        alert("El material seleccionado no tiene el stock suficiente");
+        return;
+    }
+    
     let itemHtml = "";
     inventario = await obtenerLista("inventario");
 
@@ -78,6 +95,37 @@ btnMateriales.addEventListener("click", async ()=>{
     contMateriales.innerHTML += itemHtml;
 })
 
+async function verificarStock(codigo,cantidad){
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+    inventario = await obtenerLista("inventario");
+
+    for(let i=0;i<inventario.length;i++){
+
+        if(inventario[i].codigo == codigo && cantidad <= inventario[i].stock){
+            return true;
+        }
+    }
+    return false;
+}
 async function obtenerLista(entidad) {
     let lista = []
     const response = await fetch(`${API_URL}/${entidad}.json`);
