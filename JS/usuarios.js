@@ -6,107 +6,124 @@ let usuarios = [];
 let idUsuario = null;
 cargarTabla();
 
-modal.addEventListener("click",(ev)=>{
-  if(ev.target == modal){
+modal.addEventListener("click", (ev) => {
+  if (ev.target == modal) {
     ocultarModal();
     formulario.reset();
     idUsuario = null;
   }
 })
 
+buscadorComponente.addEventListener("keydown", async (evento) => {
+  if (evento.key == "Enter") {
+    const parametroBusqueda = document.getElementById("parametroBusqueda").value;
+    const buscador = document.getElementById("buscador").value;
+    if (parametroBusqueda == "default") {
+      return;
+    }
+    await obtenerUsuarios();
+    let usuariosFiltrados = usuarios.filter(usuario =>
+      usuario[parametroBusqueda].toLowerCase().startsWith(buscador.toLowerCase())
+    )
+
+    const tablaComponente = document.getElementById("tabla-componente");
+    tablaComponente.setTabla(["cc", "nombre", "cargo", "Acciones"], usuariosFiltrados, "usuario");
+  }
+})
+
 async function cargarTabla() {
   await obtenerUsuarios();
-  buscadorComponente.setBuscador(["Nombre","Identificación"]);
+  buscadorComponente.setBuscador(["Nombre", "CC"]);
   const tablaComponente = document.getElementById("tabla-componente");
-  tablaComponente.setTabla(["CC", "Nombre", "Cargo","Acciones"], usuarios,"usuario");
+  tablaComponente.setTabla(["cc", "nombre", "cargo", "Acciones"], usuarios, "usuario");
 }
 
 
-formulario.addEventListener("submit", async (evento) =>{
+formulario.addEventListener("submit", async (evento) => {
   evento.preventDefault();
   await obtenerUsuarios();
   const datos = new FormData(formulario);
 
-  if(datos.get("password") != datos.get("passwordRep")){
+  if (datos.get("password") != datos.get("passwordRep")) {
     alert("Contraseñas no coinciden!")
     return;
   }
 
   let usuario = crearUsuario(datos);
 
-  if(idUsuario == null){
+  if (idUsuario == null) {
     usuarios.push(usuario);
-  }else{
+  } else {
     modificarListaUsuarios(usuario)
   }
-  
+
 
   await guardarUsuarios();
 
   ocultarModal();
-  formulario.submit();
+  await cargarTabla()
   idUsuario = null;
 });
 
-function modificarListaUsuarios(usuario){
-  for(let i = 0; i < usuarios.length; i++){
-    if(usuarios[i].CC == idUsuario){
+
+function modificarListaUsuarios(usuario) {
+  for (let i = 0; i < usuarios.length; i++) {
+    if (usuarios[i].cc == idUsuario) {
       usuarios[i] = usuario;
       break;
     }
   }
 }
 
-function crearUsuario(datos){
+function crearUsuario(datos) {
   let usuario = {
-    Nombre:datos.get("nombre"),
-    CC:datos.get("identificacion"),
-    Cargo:datos.get("cargo"),
-    Contraseña:datos.get("password")
+    nombre: datos.get("nombre"),
+    cc: datos.get("identificacion"),
+    cargo: datos.get("cargo"),
+    contraseña: datos.get("password")
   }
   return usuario;
 }
-function ocultarModal(){
+function ocultarModal() {
   document.querySelector('.modal-overlay').style.display = 'none';
 }
-function mostrarModal(){
+function mostrarModal() {
   document.querySelector('.modal-overlay').style.display = 'flex';
 }
 
-function editar(id){
+function editar(id) {
   mostrarModal();
   completarFormulario(id);
   idUsuario = id;
 }
 
-async function eliminar(id){
+async function eliminar(id) {
   let posicionEliminar = null;
-  console.log(posicionEliminar)
-  for(let i = 0; i < usuarios.length; i++){
-    if(usuarios[i].CC == id){
+  for (let i = 0; i < usuarios.length; i++) {
+    if (usuarios[i].cc == id) {
       posicionEliminar = i;
     }
   }
-  console.log(posicionEliminar)
-  usuarios.splice(posicionEliminar,1);
+  if (posicionEliminar == null) return;
+  usuarios.splice(posicionEliminar, 1);
   await guardarUsuarios();
   await cargarTabla();
 }
 
-function completarFormulario(id){
+function completarFormulario(id) {
   const nombre = document.getElementById("nombre");
   const identificacion = document.getElementById("identificacion");
   const cargo = document.getElementById("cargo");
   const password = document.getElementById("password");
   const passwordRep = document.getElementById("passwordRep");
 
-  usuarios.forEach(usuario =>{
-    if(usuario.CC == id){
-      nombre.value = usuario.Nombre;
-      identificacion.value = usuario.CC;
-      cargo.value = usuario.Cargo;
-      password.value = usuario.Contraseña
-      passwordRep.value = usuario.Contraseña
+  usuarios.forEach(usuario => {
+    if (usuario.cc == id) {
+      nombre.value = usuario.nombre;
+      identificacion.value = usuario.cc;
+      cargo.value = usuario.cargo;
+      password.value = usuario.contraseña;
+      passwordRep.value = usuario.contraseña;
     }
   });
 }
@@ -122,17 +139,20 @@ function completarFormulario(id){
 
 
 
-
 async function obtenerUsuarios() {
   const response = await fetch(`${API_URL}/user/usuarios.json`);
-  usuarios = await response.json();
+   usuarios = await response.json();
+  if (usuarios == null) {
+    usuarios = [];
+  }
+  return usuarios;
 }
 
 async function guardarUsuarios() {
-  await fetch(`${API_URL}/user/usuarios.json`,{
+  await fetch(`${API_URL}/user/usuarios.json`, {
     method: "PUT",
     headers: {
-      "Content-type" : "application/json"
+      "Content-type": "application/json"
     },
     body: JSON.stringify(usuarios)
   });

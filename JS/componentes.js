@@ -20,18 +20,34 @@ class tabla extends HTMLElement {
         let filasHtml = "";
 
         this.filas.forEach(fila => {
-            if(this.tipo == "usuario"){
-                id = fila.CC;
-            }else if(this.tipo == "producto"){
+            if (this.tipo == "usuario") {
+                id = fila.cc;
+            } else if (this.tipo == "producto") {
                 id = fila.codigo;
-            }else{
-                id = fila.id;
+            } else if (this.tipo == "receta") {
+                id = fila.codigoProducto;
             }
+
             filasHtml += `<tr>`;
 
             for (let i = 0; i < this.columnas.length - 1; i++) {
-                filasHtml += `<td>${fila[this.columnas[i]]}</td>`
 
+                if (Array.isArray(fila[this.columnas[i]])) {
+
+                    console.log(fila[this.columnas[i]].length)
+                    filasHtml += `<td>`;
+
+                    for (let j = 0; j < fila[this.columnas[i]].length; j++) {
+                        filasHtml += `${fila[this.columnas[i]][j].nombre} (${fila[this.columnas[i]][j].cantidad}) `;
+                    }
+
+                    filasHtml += `</td>`;
+
+                } else {
+
+                    filasHtml += `<td>${fila[this.columnas[i]]}</td>`
+
+                }
             }
 
             filasHtml += `<td style="display:flex; gap:5px;">
@@ -39,10 +55,10 @@ class tabla extends HTMLElement {
                             <button class="btn-accion btn-eliminar" onClick="eliminar('${id}')"><i class="bi bi-trash"></i></button>`;
 
             if (this.tipo == "producto") {
-                if(fila.tipo != "Materia Prima"){
+                if (fila.tipo != "Materia Prima") {
                     filasHtml += `<button class="btn-accion btn-producir" onClick="producir('${id}')"><i class="bi bi-box-seam"></i></button>`;
                 }
-                
+
             }
             filasHtml += `</td>`;
             filasHtml += `</tr>`;
@@ -63,14 +79,14 @@ class tabla extends HTMLElement {
         `;
     }
 }
-class aside extends HTMLElement{
+class aside extends HTMLElement {
 
-    constructor(){
+    constructor() {
         super()
         this.render();
     }
 
-    render(){
+    render() {
         this.innerHTML = `
             <div class="cont-nav">
                 <h2 class="logo">ACME</h2>
@@ -84,20 +100,20 @@ class aside extends HTMLElement{
     }
 }
 
-class buscador extends HTMLElement{
-    constructor(){
+class buscador extends HTMLElement {
+    constructor() {
         super()
         this.opciones = [];
     }
 
-    setBuscador(opciones){
+    setBuscador(opciones) {
         this.opciones = opciones;
         this.render();
     }
-    render(){
+    render() {
         let opcionesHtml = "";
 
-        this.opciones.forEach(opcion =>{
+        this.opciones.forEach(opcion => {
             opcionesHtml += `<option value="${opcion.toLowerCase()}">${opcion}</option>`;
         })
 
@@ -107,12 +123,12 @@ class buscador extends HTMLElement{
                         <input type="text" id="buscador" class="buscador" placeholder="Buscar...">
                         <i class="bi bi-search icon-buscar"></i>
                     </div>
-                    <select>
+                    <select id="parametroBusqueda">
                         <option value="default" selected disabled>Seleccionar</option>
                         ${opcionesHtml}
 
                     </select>
-                    <button id = "btn-agregar" ><i class="bi bi-plus-lg"></i> Agregar</button>
+                    <button id = "btn-agregar" onClick = "mostrarModal()"><i class="bi bi-plus-lg"></i> Agregar</button>
                 </div>
         `;
     }

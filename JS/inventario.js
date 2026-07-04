@@ -4,11 +4,12 @@ const modal = document.querySelector(".modal-overlay");
 const selectorTipo = document.getElementById("tipo");
 const formulario = document.querySelector(".modal-form");
 let inventario = [];
+let recetas = []
 let idProducto = null;
 cargarComponentes();
 
 async function cargarComponentes() {
-  await obtenerInventario();
+  inventario = await obtenerLista("inventario");
   buscadorComponente.setBuscador(["Codigo", "Nombre"]);
   const tablaComponente = document.getElementById("tabla-componente");
   tablaComponente.setTabla(
@@ -18,56 +19,134 @@ async function cargarComponentes() {
   );
 }
 
+buscadorComponente.addEventListener("keydown", (evento) => {
+  if (evento.key == "Enter") {
+    const parametroBusqueda = document.getElementById("parametroBusqueda").value;
+    const buscador = document.getElementById("buscador").value;
+    if (parametroBusqueda == "default") {
+      return;
+    }
+    let inventarioFiltrado = inventario.filter(producto =>
+      producto[parametroBusqueda].toLowerCase().startsWith(buscador.toLowerCase())
+    )
+
+    const tablaComponente = document.getElementById("tabla-componente");
+    tablaComponente.setTabla(
+      ["codigo", "nombre", "proveedor", "stock", "tipo", "acciones"],
+      inventarioFiltrado,
+      "producto"
+    );
+  }
+})
 selectorTipo.addEventListener("change", bloquearStock);
 
+async function producir(codigo) {
+  let materiales = await verificarReceta(codigo);
+
+  if (materiales == null) {
+
+    alert("Este producto no tiene una receta configurada. Ve a la sección de Recetas para crear una antes de producir.");
+
+    return;
+
+  }
+  const cantidadProducir = Number(prompt("¿Cuántas unidades deseas producir?", "1"));
+  if (!cantidadProducir || cantidadProducir <= 0) {
+    alert("Ingresa una cantidad válida mayor a 0 para producir.");
+    return;
+  }
+  inventario = await obtenerLista("inventario");
+
+  for (let material of materiales) {
+    let stockValido = await verificarStock(material.codigo, material.cantidad * cantidadProducir);
+    if (!stockValido) {
+      alert(`No puedes producir ${cantidadProducir} unidad(es): necesitas ${material.cantidad * cantidadProducir} de "${material.nombre}" y solo tienes disponible menos que eso.`);
+      return;
+    }
+  }
+
+
+
+  modificarInventario(codigo, materiales, cantidadProducir);
+  await guardarLista("inventario", inventario);
+  await cargarComponentes();
+}
+function modificarInventario(codigo, materiales, cantidadProducir) {
+  inventario.forEach(producto => {
+    materiales.forEach(material => {
+      if (material.codigo == producto.codigo) {
+        producto.stock -= material.cantidad * cantidadProducir;
+      }
+    })
+    if (producto.codigo == codigo) {
+      producto.stock += cantidadProducir;
+    }
+  })
+
+}
+
+async function verificarStock(codigo, cantidad) {
+
+  for (let i = 0; i < inventario.length; i++) {
+
+    if (inventario[i].codigo == codigo && cantidad <= inventario[i].stock) {
+
+      return true;
+    }
+  }
+
+  return false;
+}
+
+async function verificarReceta(codigo) {
+
+  recetas = await obtenerLista("receta");
+
+  for (let i = 0; i < recetas.length; i++) {
+
+    if (recetas[i].codigoProducto == codigo) {
+
+      return recetas[i].materiales;
+    }
+
+  }
+
+  return null;
+}
+
 function bloquearStock() {
-    const inputStock = document.getElementById("stock");
+  const inputStock = document.getElementById("stock");
 
-    if (selectorTipo.value == "Producto Elaborado") {
-        inputStock.value = 0;
-        inputStock.disabled = true;
-        document.querySelector(".seccion-receta").classList.add("activo")
-        cargarItemsReceta();
-    } else {
-        inputStock.disabled = false;
-        document.querySelector(".seccion-receta").classList.remove("activo")
-    }
+  if (selectorTipo.value == "Producto Elaborado") {
+    inputStock.value = 0;
+    inputStock.disabled = true;
+
+  } else {
+    inputStock.disabled = false;
+
+  }
 }
 
-async function cargarItemsReceta(){
-    await obtenerInventario();
-    let itemsHtml = "";
-    for(let i = 0;i<inventario.length;i++){
-        itemsHtml += `
-            <div class="receta-item">
-                <input type="checkbox" name="ingrediente-${i}" id="ingrediente-${i}">
-                <label for="ingrediente-${i}">${inventario[i].nombre}</label>
-                <input type="number" name="cantidad-${i}" id="cantidad-${i}" placeholder="0" min="0">
-            </div>
-        `;
-    }
-    const contReceta = document.querySelector(".receta-lista");
-    contReceta.innerHTML = itemsHtml;
-}
+
 
 formulario.addEventListener("submit", async (evento) => {
-    evento.preventDefault();
-    await obtenerInventario();
-    const datos = new FormData(formulario);
+  evento.preventDefault();
+  inventario = await obtenerLista("inventario");
+  const datos = new FormData(formulario);
 
-    let producto = crearProducto(datos);
+  let producto = crearProducto(datos);
 
-    if (idProducto == null) {
-        inventario.push(producto);
-    } else {
-        modificarListaInventario(producto);
-    }
+  if (idProducto == null) {
+    inventario.push(producto);
+  } else {
+    modificarListaInventario(producto);
+  }
 
-    await guardarInventario();
+  await guardarLista("inventario", inventario);
 
-    ocultarModal();
-    formulario.submit();
-    idProducto = null;
+  ocultarModal();
+  await cargarComponentes();
+  idProducto = null;
 });
 
 function modificarListaInventario(producto) {
@@ -85,7 +164,7 @@ function crearProducto(datos) {
     codigo: datos.get("codigo"),
     proveedor: datos.get("proveedor"),
     tipo: datos.get("tipo"),
-    stock: document.getElementById("stock").value,
+    stock: Number(document.getElementById("stock").value)
   };
   return producto;
 }
@@ -98,16 +177,48 @@ function editar(id) {
 }
 
 async function eliminar(id) {
+  let existeProducto = await verificarExistenciaReceta(id)
+
+  if (existeProducto) {
+    return;
+  }
+
   let posicionEliminar = null;
+
   for (let i = 0; i < inventario.length; i++) {
     if (inventario[i].codigo == id) {
       posicionEliminar = i;
     }
   }
 
+  if (posicionEliminar == null) {
+    return;
+  }
+
   inventario.splice(posicionEliminar, 1);
-  await guardarInventario();
+  await guardarLista("inventario", inventario);
   await cargarComponentes();
+}
+
+async function verificarExistenciaReceta(id) {
+
+  recetas = await obtenerLista("receta");
+
+  for (let receta of recetas) {
+    if (receta.codigoProducto == id) {
+      alert(`No puedes eliminar este producto porque tiene una receta asociada. Elimina primero la receta desde la sección Recetas.`);
+      return true;
+    }
+
+    for (let material of receta.materiales) {
+      if (material.codigo == id) {
+        alert(`No puedes eliminar este material porque se usa en la receta de "${receta.nombre}". Quítalo de esa receta antes de eliminarlo del inventario.`);
+        return true;
+      }
+    }
+  }
+
+  return false;
 }
 
 function completarFormulario(id) {
@@ -141,20 +252,22 @@ modal.addEventListener("click", (ev) => {
   }
 });
 
-async function obtenerInventario() {
-  const response = await fetch(`${API_URL}/inventario.json`);
-  inventario = await response.json();
-  if (inventario == null) {
-    inventario = [];
+async function obtenerLista(entidad) {
+  let lista = []
+  const response = await fetch(`${API_URL}/${entidad}.json`);
+  lista = await response.json();
+  if (lista == null) {
+    lista = [];
   }
+  return lista;
 }
 
-async function guardarInventario() {
-  await fetch(`${API_URL}/inventario.json`, {
+async function guardarLista(entidad, lista) {
+  await fetch(`${API_URL}/${entidad}.json`, {
     method: "PUT",
     headers: {
       "Content-type": "application/json",
     },
-    body: JSON.stringify(inventario),
+    body: JSON.stringify(lista),
   });
 }
