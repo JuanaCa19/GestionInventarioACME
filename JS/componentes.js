@@ -34,7 +34,6 @@ class tabla extends HTMLElement {
 
                 if (Array.isArray(fila[this.columnas[i]])) {
 
-                    console.log(fila[this.columnas[i]].length)
                     filasHtml += `<td>`;
 
                     for (let j = 0; j < fila[this.columnas[i]].length; j++) {

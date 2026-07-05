@@ -9,7 +9,6 @@ cargarTabla();
 modal.addEventListener("click", (ev) => {
   if (ev.target == modal) {
     ocultarModal();
-    formulario.reset();
     idUsuario = null;
   }
 })
@@ -96,6 +95,7 @@ function crearUsuario(datos) {
 }
 function ocultarModal() {
   document.querySelector('.modal-overlay').style.display = 'none';
+  formulario.reset();
 }
 function mostrarModal() {
   document.querySelector('.modal-overlay').style.display = 'flex';

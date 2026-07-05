@@ -50,6 +50,10 @@ formulario.addEventListener("submit", async (evento) => {
     recetas = await obtenerLista("receta");
     const datos = new FormData(formulario);
 
+    if(listaMateriales.length === 0){
+        alert("¡No puedes guardar una receta sin materiales!")
+        return;
+    }
     eliminarDuplicados();
     let receta = crearReceta(datos);
 
@@ -177,7 +181,11 @@ function verificarReceta(codigoProducto) {
 
 btnMateriales.addEventListener("click", async () => {
 
-    const cantidad = document.getElementById("cantidad").value;
+    const cantidad = Number(document.getElementById("cantidad").value);
+    if(cantidad<=0){
+        alert("¡No puedes Agregar un material con esta cantidad!")
+        return;
+    }
     let codigoProducto = selectProductos.value;
 
     inventario = await obtenerLista("inventario");
@@ -195,7 +203,7 @@ function cargarMaterialesSeleccionados(codigoProducto, cantidad) {
             let productoSeleccionado = {
                 codigo: codigoProducto,
                 nombre: producto.nombre,
-                cantidad: Number(cantidad)
+                cantidad: cantidad
             }
             listaMateriales.push(productoSeleccionado);
         }

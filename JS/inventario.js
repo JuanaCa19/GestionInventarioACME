@@ -26,8 +26,8 @@ async function cargarComponentes() {
   );
 }
 
-function cerrarSesion(){
-    sessionStorage.clear();
+function cerrarSesion() {
+  sessionStorage.clear();
 }
 
 buscadorComponente.addEventListener("keydown", (evento) => {
@@ -220,11 +220,13 @@ async function verificarExistenciaReceta(id) {
       alert(`No puedes eliminar este producto porque tiene una receta asociada. Elimina primero la receta desde la sección Recetas.`);
       return true;
     }
-
-    for (let material of receta.materiales) {
-      if (material.codigo == id) {
-        alert(`No puedes eliminar este material porque se usa en la receta de "${receta.nombre}". Quítalo de esa receta antes de eliminarlo del inventario.`);
-        return true;
+    
+    if (receta.materiales != undefined) {
+      for (let material of receta.materiales) {
+        if (material.codigo == id) {
+          alert(`No puedes eliminar este material porque se usa en la receta de "${receta.nombre}". Quítalo de esa receta antes de eliminarlo del inventario.`);
+          return true;
+        }
       }
     }
   }
@@ -252,14 +254,16 @@ function completarFormulario(id) {
 
 function ocultarModal() {
   document.querySelector(".modal-overlay").style.display = "none";
+  formulario.reset();
 }
 function mostrarModal() {
   document.querySelector(".modal-overlay").style.display = "flex";
 }
+
 modal.addEventListener("click", (ev) => {
   if (ev.target == modal) {
     ocultarModal();
-    formulario.reset();
+    idProducto = null;
   }
 });
 
