@@ -25,7 +25,7 @@ class tabla extends HTMLElement {
             } else if (this.tipo == "producto") {
                 id = fila.codigo;
             } else if (this.tipo == "receta") {
-                id = fila.codigoProducto;
+                id = fila.codigoproducto;
             }
 
             filasHtml += `<tr>`;
