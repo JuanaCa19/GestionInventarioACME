@@ -12,7 +12,7 @@ formLogin.addEventListener("submit",async (ev)=>{
 
     for(let i = 0; i< usuarios.length;i++){
         if(usuarios[i].cc == cc.value && usuarios[i].contraseña == password.value){
-            guardarSesion();
+            guardarSesion(usuarios[i]);
             window.location.href = "usuarios.html"
             return;
         }
@@ -25,6 +25,6 @@ async function obtenerUsuarios(){
     usuarios = await response.json();
 } 
 
-function guardarSesion(){
-
+function guardarSesion(usuario){
+    sessionStorage.setItem("usuarioSesion",JSON.stringify(usuario))
 }

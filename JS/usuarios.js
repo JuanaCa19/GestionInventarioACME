@@ -13,6 +13,16 @@ modal.addEventListener("click", (ev) => {
     idUsuario = null;
   }
 })
+document.addEventListener("DOMContentLoaded", () => {
+  const sesionUsuario = sessionStorage.getItem("usuarioSesion");
+  if (sesionUsuario == null) {
+    window.location.href = "/index.html"
+  }
+})
+
+function cerrarSesion(){
+    sessionStorage.clear();
+}
 
 buscadorComponente.addEventListener("keydown", async (evento) => {
   if (evento.key == "Enter") {
@@ -141,7 +151,7 @@ function completarFormulario(id) {
 
 async function obtenerUsuarios() {
   const response = await fetch(`${API_URL}/user/usuarios.json`);
-   usuarios = await response.json();
+  usuarios = await response.json();
   if (usuarios == null) {
     usuarios = [];
   }

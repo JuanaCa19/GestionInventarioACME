@@ -317,3 +317,85 @@ table {
 .btn-guardar:hover {
   background-color: #2c3e50;
 }
+
+
+@media (max-width: 768px) {
+  body {
+    flex-direction: column;
+  }
+
+  .cont-nav {
+    width: 100%;
+    height: auto;
+    flex-direction: row;
+    justify-content: center;
+    padding: 10px 0;
+    gap: 15px;
+  }
+
+  .nav {
+    flex-direction: row;
+    width: auto;
+    gap: 5px;
+  }
+
+  .nav a {
+    width: auto;
+    padding: 8px 14px;
+    font-size: 15px;
+  }
+
+  .main {
+    padding: 20px 15px;
+  }
+
+  table {
+    width: 100%;
+  }
+
+  .barra-busqueda {
+    flex-wrap: wrap;
+    width: 100%;
+  }
+
+  .contenedor-buscador {
+    flex: 1 1 100%;
+  }
+
+  .buscador {
+    width: 100%;
+    box-sizing: border-box;
+  }
+}
+
+@media (max-width: 480px) {
+  .cont-nav {
+    flex-wrap: wrap;
+  }
+
+  .nav a {
+    font-size: 13px;
+    padding: 6px 10px;
+  }
+
+  .tabla-componente th,
+  .tabla-componente td {
+    padding: 8px 8px;
+    font-size: 12px;
+  }
+
+  .modal-contenedor {
+    max-width: 90vw;
+    padding: 20px;
+  }
+
+  .modal-botones {
+    flex-direction: column-reverse;
+  }
+
+  .btn-cancelar,
+  .btn-guardar {
+    width: 100%;
+    text-align: center;
+  }
+}

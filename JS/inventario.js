@@ -8,6 +8,13 @@ let recetas = []
 let idProducto = null;
 cargarComponentes();
 
+document.addEventListener("DOMContentLoaded", () => {
+  const sesionUsuario = sessionStorage.getItem("usuarioSesion");
+  if (sesionUsuario == null) {
+    window.location.href = "/index.html"
+  }
+})
+
 async function cargarComponentes() {
   inventario = await obtenerLista("inventario");
   buscadorComponente.setBuscador(["Codigo", "Nombre"]);
@@ -17,6 +24,10 @@ async function cargarComponentes() {
     inventario,
     "producto"
   );
+}
+
+function cerrarSesion(){
+    sessionStorage.clear();
 }
 
 buscadorComponente.addEventListener("keydown", (evento) => {

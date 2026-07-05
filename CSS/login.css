@@ -45,7 +45,7 @@ input:focus{
     border-color: #4f6ef7;
 }
 .btn-primary{
-    background: #4f6ef7;
+    background: #34495e;
     color: #fff;
     display: inline-block;
     padding: 10px 20px;
@@ -55,4 +55,16 @@ input:focus{
     font-weight: 600;
     cursor: pointer;
     text-decoration: none;
+}
+
+@media (max-width: 480px) {
+  body {
+    padding: 15px;
+    box-sizing: border-box;
+  }
+
+  .form-login {
+    width: 100%;
+    max-width: 380px;
+  }
 }
