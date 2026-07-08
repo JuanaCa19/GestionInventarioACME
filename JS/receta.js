@@ -12,37 +12,37 @@ let idReceta = null;
 cargarComponentes();
 
 document.addEventListener("DOMContentLoaded", () => {
-  const sesionUsuario = sessionStorage.getItem("usuarioSesion");
-  if (sesionUsuario == null) {
-    window.location.href = "/index.html"
-  }
+    const sesionUsuario = sessionStorage.getItem("usuarioSesion");
+    if (sesionUsuario == null) {
+        window.location.href = "/index.html"
+    }
 })
 
-function cerrarSesion(){
+function cerrarSesion() {
     sessionStorage.clear();
 }
 
 buscadorComponente.addEventListener("keydown", async (evento) => {
-  if (evento.key == "Enter") {
-    const parametroBusqueda = document.getElementById("parametroBusqueda").value;
-    const buscador = document.getElementById("buscador").value;
-    if (parametroBusqueda == "default") {
-      return;
+    if (evento.key == "Enter") {
+        const parametroBusqueda = document.getElementById("parametroBusqueda").value;
+        const buscador = document.getElementById("buscador").value;
+        if (parametroBusqueda == "default") {
+            return;
+        }
+
+        recetas = await obtenerLista("receta");
+
+        let recetasFiltradas = recetas.filter(producto =>
+            producto[parametroBusqueda].toLowerCase().startsWith(buscador.toLowerCase())
+        )
+
+
+        tablaComponente.setTabla(
+            ["nombre", "codigoproducto", "materiales", "acciones"],
+            recetasFiltradas,
+            "receta"
+        );
     }
-
-    recetas = await obtenerLista("receta");
-
-    let recetasFiltradas = recetas.filter(producto =>
-      producto[parametroBusqueda].toLowerCase().startsWith(buscador.toLowerCase())
-    )
-
-
-    tablaComponente.setTabla(
-      ["nombre", "codigoproducto", "materiales", "acciones"],
-      recetasFiltradas,
-      "receta"
-    );
-  }
 })
 
 formulario.addEventListener("submit", async (evento) => {
@@ -50,7 +50,14 @@ formulario.addEventListener("submit", async (evento) => {
     recetas = await obtenerLista("receta");
     const datos = new FormData(formulario);
 
-    if(listaMateriales.length === 0){
+    let camposValidos = validarCampos(datos);
+
+    if (!camposValidos) {
+        alert("No se permiten campos vacios");
+        return;
+    }
+
+    if (listaMateriales.length === 0) {
         alert("¡No puedes guardar una receta sin materiales!")
         return;
     }
@@ -70,6 +77,13 @@ formulario.addEventListener("submit", async (evento) => {
     idReceta = null;
 });
 
+function validarCampos(datos){
+  if(datos.get("nombre").trim() === ""){
+    return false;
+  }
+  return true;
+}
+
 function modificarListaReceta(receta) {
     for (let i = 0; i < recetas.length; i++) {
         if (recetas[i].codigoproducto == idReceta) {
@@ -81,7 +95,7 @@ function modificarListaReceta(receta) {
 
 function crearReceta(datos) {
     let receta = {
-        nombre: datos.get("nombre"),
+        nombre: datos.get("nombre").trim(),
         codigoproducto: datos.get("producto"),
         materiales: listaMateriales,
     }
@@ -182,7 +196,13 @@ function verificarReceta(codigoProducto) {
 btnMateriales.addEventListener("click", async () => {
 
     const cantidad = Number(document.getElementById("cantidad").value);
-    if(cantidad<=0){
+
+    if (!Number.isInteger(Number(cantidad))) {
+        alert("¡La cantidad debe ser un número entero!")
+        return;
+    }
+
+    if (cantidad <= 0) {
         alert("¡No puedes Agregar un material con esta cantidad!")
         return;
     }

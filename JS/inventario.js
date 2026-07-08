@@ -145,6 +145,18 @@ formulario.addEventListener("submit", async (evento) => {
   inventario = await obtenerLista("inventario");
   const datos = new FormData(formulario);
 
+  let camposValidos = validarCampos(datos);
+
+  if(!camposValidos){
+    alert("No se permiten campos vacios");
+    return;
+  }
+
+ if(validarCodigo(datos)){
+    alert(`¡Ya existe un producto con esta codigo!: ${datos.get("codigo").trim()}`)
+    return;
+  }
+
   let producto = crearProducto(datos);
 
   if (idProducto == null) {
@@ -160,6 +172,17 @@ formulario.addEventListener("submit", async (evento) => {
   idProducto = null;
 });
 
+function validarCodigo(datos){
+  return inventario.some(producto => producto.codigo == datos.get("codigo").trim() && producto.codigo != idProducto);
+}
+
+function validarCampos(datos){
+  if(datos.get("nombre").trim() === "" || datos.get("codigo").trim() === "" || datos.get("proveedor").trim() === ""){
+    return false;
+  }
+  return true;
+}
+
 function modificarListaInventario(producto) {
   for (let i = 0; i < inventario.length; i++) {
     if (inventario[i].codigo == idProducto) {
@@ -171,9 +194,9 @@ function modificarListaInventario(producto) {
 
 function crearProducto(datos) {
   let producto = {
-    nombre: datos.get("nombre"),
-    codigo: datos.get("codigo"),
-    proveedor: datos.get("proveedor"),
+    nombre: datos.get("nombre").trim(),
+    codigo: datos.get("codigo").trim(),
+    proveedor: datos.get("proveedor").trim(),
     tipo: datos.get("tipo"),
     stock: Number(document.getElementById("stock").value)
   };

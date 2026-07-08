@@ -53,7 +53,20 @@ formulario.addEventListener("submit", async (evento) => {
   await obtenerUsuarios();
   const datos = new FormData(formulario);
 
-  if (datos.get("password") != datos.get("passwordRep")) {
+  let camposValidos = validarCampos(datos);
+
+  if(!camposValidos){
+    alert("No se permiten campos vacios");
+    return;
+  }
+
+  if(validarIdentificacion(datos)){
+    alert(`¡Ya existe un usuario con esta Identificación!: ${datos.get("identificacion").trim()}`)
+    return;
+  }
+
+
+  if (datos.get("password").trim() != datos.get("passwordRep").trim()) {
     alert("Contraseñas no coinciden!")
     return;
   }
@@ -74,6 +87,18 @@ formulario.addEventListener("submit", async (evento) => {
   idUsuario = null;
 });
 
+function validarIdentificacion(datos){
+  return usuarios.some(usuario => usuario.cc == datos.get("identificacion").trim() && usuario.cc != idUsuario);
+}
+
+function validarCampos(datos){
+  if(datos.get("nombre").trim() === "" 
+      || datos.get("identificacion").trim() === "" 
+      || datos.get("cargo").trim() === "" || datos.get("password").trim() === ""){
+    return false;
+  }
+  return true;
+}
 
 function modificarListaUsuarios(usuario) {
   for (let i = 0; i < usuarios.length; i++) {
@@ -86,10 +111,10 @@ function modificarListaUsuarios(usuario) {
 
 function crearUsuario(datos) {
   let usuario = {
-    nombre: datos.get("nombre"),
-    cc: datos.get("identificacion"),
-    cargo: datos.get("cargo"),
-    contraseña: datos.get("password")
+    nombre: datos.get("nombre").trim(),
+    cc: datos.get("identificacion").trim(),
+    cargo: datos.get("cargo").trim(),
+    contraseña: datos.get("password").trim()
   }
   return usuario;
 }
