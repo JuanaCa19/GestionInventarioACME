@@ -12,7 +12,9 @@ class tabla extends HTMLElement {
         this.crearTabla();
     }
     crearTabla() {
+        const formatter = new Intl.DateTimeFormat("sv-SE");
         let id = "";
+        let i = 0;
         let columnasHtml = "";
         this.columnas.forEach(columna => {
             columnasHtml += `<th>${columna}</th>`
@@ -25,6 +27,8 @@ class tabla extends HTMLElement {
             } else if (this.tipo == "producto") {
                 id = fila.codigo;
             } else if (this.tipo == "receta") {
+                id = fila.codigoproducto;
+            } else if (this.tipo == "historial") {
                 id = fila.codigoproducto;
             }
 
@@ -42,27 +46,36 @@ class tabla extends HTMLElement {
 
                     filasHtml += `</td>`;
 
+                } else if (this.tipo == "historial" && this.columnas[i] == "fechaproduccion") {
+                    filasHtml += `<td>${formatter.format(new Date(fila[this.columnas[i]]))}</td>`
                 } else {
-
                     filasHtml += `<td>${fila[this.columnas[i]]}</td>`
-
                 }
             }
 
-            filasHtml += `<td style="display:flex; gap:5px;">
-                            <button class="btn-accion btn-editar" onClick="editar('${id}')"><i class="bi bi-pencil"></i></button>
-                            <button class="btn-accion btn-eliminar" onClick="eliminar('${id}')"><i class="bi bi-trash"></i></button>`;
+            filasHtml += `<td style="display:flex; gap:5px;">`;
+
+            if (this.tipo == "historial") {
+                filasHtml += `<button class="btn-accion btn-eliminar" onClick="eliminarHistorial('${id}',${i})"><i class="bi bi-trash"></i></button>`;
+            } else {
+                filasHtml += ` <button class="btn-accion btn-editar" onClick="editar('${id}')"><i class="bi bi-pencil"></i></button>`;
+                filasHtml += `<button class="btn-accion btn-eliminar" onClick="eliminar('${id}')"><i class="bi bi-trash"></i></button>`;
+            }
+
 
             if (this.tipo == "producto") {
+                
                 if (fila.tipo != "Materia Prima") {
                     filasHtml += `<button class="btn-accion btn-producir" onClick="producir('${id}')"><i class="bi bi-box-seam"></i></button>`;
+                    filasHtml += `<button class="btn-accion btn-historial" onClick="verHistorialProducto('${id}')"><i class="bi bi-file-text"></i></button>`;
                 }
 
             }
             filasHtml += `</td>`;
             filasHtml += `</tr>`;
+            i++;
         })
-
+        i = 0;
 
         this.innerHTML = `
             <table>
@@ -93,6 +106,7 @@ class aside extends HTMLElement {
                     <a href="/usuarios.html">Usuario</a>
                     <a href="/inventario.html">Inventario</a>
                     <a href="/receta.html">Receta</a>
+                    <a href="/reporte.html">Reporte</a>
                     <a href="/index.html" onClick = "cerrarSesion()">Salir</a>
                 </nav>
             </div>

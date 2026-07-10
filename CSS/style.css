@@ -215,6 +215,14 @@ table {
   color: #fff;
 }
 
+.btn-historial {
+  background-color: #f1f8e9;
+  color: #86d67f;
+}
+.btn-historial:hover {
+  background-color: #86d67f;
+  color: #fff;
+}
 .btn-producir {
   background-color: #fff3e0;
   color: #ea8c00;

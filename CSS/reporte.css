@@ -1,0 +1,35 @@
+.contenedor-fechas input {
+    width: 105px;
+}
+
+.contenedor-fechas input {
+    padding: 8px 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 5px;
+    font-size: 14px;
+    font-family: inherit;
+    color: #333;
+    outline: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.contenedor-fechas input:focus {
+    border-color: #2c3e50;
+    box-shadow: 0 0 0 2px rgba(44, 62, 80, 0.15);
+}
+
+.contenedor-fechas button {
+    padding: 7px 16px;
+    border: none;
+    border-radius: 5px;
+    background-color: #34495e;
+    color: #fff;
+    font-size: 14px;
+    font-family: inherit;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.contenedor-fechas button:hover {
+    background-color: #2c3e50;
+}

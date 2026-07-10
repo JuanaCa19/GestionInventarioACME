@@ -4,6 +4,7 @@ const modal = document.querySelector(".modal-overlay");
 const selectorTipo = document.getElementById("tipo");
 const formulario = document.querySelector(".modal-form");
 let inventario = [];
+let historial = [];
 let recetas = []
 let idProducto = null;
 cargarComponentes();
@@ -61,11 +62,13 @@ async function producir(codigo) {
     return;
 
   }
+
   const cantidadProducir = Number(prompt("¿Cuántas unidades deseas producir?", "1"));
   if (!cantidadProducir || cantidadProducir <= 0) {
     alert("Ingresa una cantidad válida mayor a 0 para producir.");
     return;
   }
+
   inventario = await obtenerLista("inventario");
 
   for (let material of materiales) {
@@ -80,8 +83,14 @@ async function producir(codigo) {
 
   modificarInventario(codigo, materiales, cantidadProducir);
   await guardarLista("inventario", inventario);
+
+  historial = await obtenerLista("historial");
+  historial.push(crearHistorial(codigo, cantidadProducir));
+  await guardarLista("historial", historial);
+
   await cargarComponentes();
 }
+
 function modificarInventario(codigo, materiales, cantidadProducir) {
   inventario.forEach(producto => {
     materiales.forEach(material => {
@@ -147,12 +156,12 @@ formulario.addEventListener("submit", async (evento) => {
 
   let camposValidos = validarCampos(datos);
 
-  if(!camposValidos){
+  if (!camposValidos) {
     alert("No se permiten campos vacios");
     return;
   }
 
- if(validarCodigo(datos)){
+  if (validarCodigo(datos)) {
     alert(`¡Ya existe un producto con esta codigo!: ${datos.get("codigo").trim()}`)
     return;
   }
@@ -172,12 +181,12 @@ formulario.addEventListener("submit", async (evento) => {
   idProducto = null;
 });
 
-function validarCodigo(datos){
+function validarCodigo(datos) {
   return inventario.some(producto => producto.codigo == datos.get("codigo").trim() && producto.codigo != idProducto);
 }
 
-function validarCampos(datos){
-  if(datos.get("nombre").trim() === "" || datos.get("codigo").trim() === "" || datos.get("proveedor").trim() === ""){
+function validarCampos(datos) {
+  if (datos.get("nombre").trim() === "" || datos.get("codigo").trim() === "" || datos.get("proveedor").trim() === "") {
     return false;
   }
   return true;
@@ -243,7 +252,7 @@ async function verificarExistenciaReceta(id) {
       alert(`No puedes eliminar este producto porque tiene una receta asociada. Elimina primero la receta desde la sección Recetas.`);
       return true;
     }
-    
+
     if (receta.materiales != undefined) {
       for (let material of receta.materiales) {
         if (material.codigo == id) {
@@ -290,6 +299,68 @@ modal.addEventListener("click", (ev) => {
   }
 });
 
+function crearHistorial(codigoproducto, cantidad) {
+  let nombreProducto = "";
+
+  for (producto of inventario) {
+    if (producto.codigo == codigoproducto) {
+      nombreProducto = producto.nombre;
+    }
+  }
+
+  let historial = {
+    codigoproducto: codigoproducto,
+    nombre: nombreProducto,
+    cantidad: cantidad,
+    fechaproduccion: new Date()
+  }
+  return historial;
+}
+
+async function verHistorialProducto(codigo) {
+
+  historial = await obtenerLista("historial");
+
+  historial = historial.filter(historial => historial.codigoproducto == codigo);
+
+  if (historial.length == 0) {
+    alert("¡El producto no tiene un historial de Producción!")
+    return;
+  }
+
+  cargarTablaHistorial()
+
+}
+
+function cargarTablaHistorial() {
+  buscadorComponente.setBuscador(["CodigoProducto", "Codigo"]);
+  const tablaComponente = document.getElementById("tabla-componente");
+  tablaComponente.setTabla(
+    ["codigoproducto","nombre", "cantidad", "fechaproduccion", "acciones"],
+    historial,
+    "historial"
+  );
+  document.getElementById("btn-agregar").style.display = "none";
+}
+
+async function eliminarHistorial(codigo,indice) {
+  historial = await obtenerLista("historial");
+
+  for (let i = 0; i < historial.length; i++) {
+
+    if (historial[i].codigoproducto == codigo) {
+      historial.splice(indice, 1);
+      break;
+    }
+  }
+
+  await guardarLista("historial", historial);
+
+  historial = await obtenerLista("historial");
+  historial = historial.filter(historial => historial.codigoproducto == codigo);
+  cargarTablaHistorial();
+
+}
 async function obtenerLista(entidad) {
   let lista = []
   const response = await fetch(`${API_URL}/${entidad}.json`);
